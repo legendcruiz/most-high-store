@@ -9,10 +9,17 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     // get current session on load
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user || null);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        setUser(data.session?.user || null);
+      })
+      .catch(() => {
+        setUser(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     // listen for auth changes
     const { data: listener } = supabase.auth.onAuthStateChange(
@@ -27,7 +34,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function signOut() {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut().catch(() => {});
     setUser(null);
   }
 

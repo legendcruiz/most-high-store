@@ -122,11 +122,19 @@ export default function Navbar() {
                 Logout
               </button>
             ) : (
-              <Link to="/login">
-                <button className="bg-orange-500 px-4 py-2 rounded-lg hover:bg-orange-600">
-                  Login
-                </button>
-              </Link>
+              <>
+                <Link to="/signup">
+                  <button className="border border-orange-500 px-4 py-2 rounded-lg hover:bg-orange-500">
+                    Sign Up
+                  </button>
+                </Link>
+
+                <Link to="/login">
+                  <button className="bg-orange-500 px-4 py-2 rounded-lg hover:bg-orange-600">
+                    Login
+                  </button>
+                </Link>
+              </>
             )}
 
           </div>
