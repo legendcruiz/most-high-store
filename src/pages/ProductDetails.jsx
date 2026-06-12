@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import { supabase } from "../lib/supabaseClient";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { fallbackProducts } from "../data/fallbackProducts";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -25,10 +26,13 @@ export default function ProductDetails() {
         .eq("id", id)
         .single();
 
-      if (!error) {
+      if (!error && data) {
         setProduct(data);
       } else {
-        setProduct(null);
+        setProduct(
+          fallbackProducts.find((item) => String(item.id) === String(id)) ||
+            null
+        );
       }
 
       setLoading(false);

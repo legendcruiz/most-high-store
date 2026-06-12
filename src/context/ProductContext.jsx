@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { fallbackProducts } from "../data/fallbackProducts";
 
 const ProductContext = createContext();
 
@@ -17,8 +18,10 @@ export function ProductProvider({ children }) {
         .from("products")
         .select("*");
 
-      if (!error) {
+      if (!error && data?.length) {
         setProducts(data || []);
+      } else {
+        setProducts(fallbackProducts);
       }
 
       setLoading(false);

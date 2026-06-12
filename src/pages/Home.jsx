@@ -5,6 +5,7 @@ import Layout from "../components/Layout";
 import { supabase } from "../lib/supabaseClient";
 import { useProducts } from "../context/ProductContext";
 import { useCart } from "../context/CartContext";
+import { fallbackProducts } from "../data/fallbackProducts";
 
 export default function Home() {
   const { search, category } = useProducts();
@@ -14,8 +15,8 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchProducts() {
-      const { data } = await supabase.from("products").select("*");
-      setProducts(data || []);
+      const { data, error } = await supabase.from("products").select("*");
+      setProducts(!error && data?.length ? data : fallbackProducts);
     }
 
     fetchProducts();
