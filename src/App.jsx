@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import Admin from "./pages/Admin";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
@@ -27,6 +28,8 @@ export default function App() {
       <Route path="/cart" element={<Cart />} />
 
       <Route path="/login" element={<Login />} />
+
+      <Route path="/signup" element={<Signup />} />
 
       <Route path="/admin" element={<Admin />} />
 

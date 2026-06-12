@@ -3,15 +3,20 @@ import { createContext, useContext, useEffect, useState } from "react";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
+  const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("cart");
 
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
+    if (!savedCart) return [];
+
+    try {
+      const parsedCart = JSON.parse(savedCart);
+
+      return Array.isArray(parsedCart) ? parsedCart : [];
+    } catch {
+      localStorage.removeItem("cart");
+      return [];
     }
-  }, []);
+  });
 
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -28,7 +33,7 @@ export function CartProvider({ children }) {
           item.id === product.id
             ? {
                 ...item,
-                quantity: item.quantity + 1,
+                quantity: Number(item.quantity || 0) + 1,
               }
             : item
         );
@@ -54,12 +59,33 @@ export function CartProvider({ children }) {
     setCart([]);
   }
 
+  function updateQuantity(id, quantity) {
+    const nextQuantity = Number(quantity);
+
+    if (nextQuantity < 1) {
+      removeFromCart(id);
+      return;
+    }
+
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              quantity: nextQuantity,
+            }
+          : item
+      )
+    );
+  }
+
   return (
     <CartContext.Provider
       value={{
         cart,
         addToCart,
         removeFromCart,
+        updateQuantity,
         clearCart,
       }}
     >

@@ -11,22 +11,24 @@ export default function Orders() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    if (!user?.email) return;
 
-  async function fetchOrders() {
-    const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("user_email", user.email)
-      .order("created_at", { ascending: false });
+    async function fetchOrders() {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("user_email", user.email)
+        .order("created_at", { ascending: false });
 
-    if (!error) {
-      setOrders(data);
+      if (!error) {
+        setOrders(data || []);
+      }
+
+      setLoading(false);
     }
 
-    setLoading(false);
-  }
+    fetchOrders();
+  }, [user?.email]);
 
   if (loading) {
     return (
@@ -74,7 +76,7 @@ export default function Orders() {
               </div>
 
               <div className="space-y-3">
-                {order.items.map((item, index) => (
+                {(order.items || []).map((item, index) => (
                   <div
                     key={index}
                     className="flex justify-between border-b pb-2"
@@ -92,7 +94,7 @@ export default function Orders() {
                     <p className="font-bold">
                       $
                       {(
-                        item.price * item.quantity
+                        Number(item.price || 0) * Number(item.quantity || 0)
                       ).toLocaleString()}
                     </p>
                   </div>

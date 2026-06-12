@@ -11,6 +11,20 @@ export default function Notifications() {
     useState([]);
 
   useEffect(() => {
+    if (!user?.email) return;
+
+    async function fetchNotifications() {
+      const { data } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_email", user.email)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      setNotifications(data || []);
+    }
+
     fetchNotifications();
 
     const channel = supabase
@@ -38,19 +52,7 @@ export default function Notifications() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
-
-  async function fetchNotifications() {
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .eq("user_email", user.email)
-      .order("created_at", {
-        ascending: false,
-      });
-
-    setNotifications(data || []);
-  }
+  }, [user?.email]);
 
   return (
     <Layout>

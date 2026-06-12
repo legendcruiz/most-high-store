@@ -8,7 +8,8 @@ export default function Checkout() {
   const { user } = useAuth();
 
   const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum + Number(item.price || 0) * Number(item.quantity || 0),
     0
   );
 
@@ -69,7 +70,7 @@ export default function Checkout() {
                 <p className="font-bold text-orange-500">
                   $
                   {(
-                    item.price * item.quantity
+                    Number(item.price || 0) * Number(item.quantity || 0)
                   ).toLocaleString()}
                 </p>
               </div>

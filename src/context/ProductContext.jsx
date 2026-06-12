@@ -10,22 +10,22 @@ export function ProductProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    async function fetchProducts() {
+      setLoading(true);
 
-  async function fetchProducts() {
-    setLoading(true);
+      const { data, error } = await supabase
+        .from("products")
+        .select("*");
 
-    const { data, error } = await supabase
-      .from("products")
-      .select("*");
+      if (!error) {
+        setProducts(data || []);
+      }
 
-    if (!error) {
-      setProducts(data || []);
+      setLoading(false);
     }
 
-    setLoading(false);
-  }
+    fetchProducts();
+  }, []);
 
   return (
     <ProductContext.Provider

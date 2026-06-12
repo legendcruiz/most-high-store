@@ -13,16 +13,16 @@ export default function Home() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
+    async function fetchProducts() {
+      const { data } = await supabase.from("products").select("*");
+      setProducts(data || []);
+    }
+
     fetchProducts();
   }, []);
 
-  async function fetchProducts() {
-    const { data } = await supabase.from("products").select("*");
-    setProducts(data || []);
-  }
-
   const filtered = products.filter((p) => {
-    const matchSearch = p.name
+    const matchSearch = String(p.name || "")
       .toLowerCase()
       .includes(search.toLowerCase());
 

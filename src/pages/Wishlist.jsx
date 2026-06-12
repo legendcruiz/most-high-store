@@ -9,35 +9,38 @@ export default function Wishlist() {
   const { user } = useAuth();
 
   const [items, setItems] = useState([]);
+  const [refreshCount, setRefreshCount] = useState(0);
 
   useEffect(() => {
-    fetchWishlist();
-  }, []);
+    if (!user?.email) return;
 
-  async function fetchWishlist() {
-    const { data: wishlist } = await supabase
-      .from("wishlist")
-      .select("*")
-      .eq("user_email", user.email);
+    async function fetchWishlist() {
+      const { data: wishlist } = await supabase
+        .from("wishlist")
+        .select("*")
+        .eq("user_email", user.email);
 
-    if (!wishlist) return;
+      if (!wishlist) return;
 
-    const productIds = wishlist.map(
-      (item) => item.product_id
-    );
+      const productIds = wishlist.map(
+        (item) => item.product_id
+      );
 
-    if (productIds.length === 0) {
-      setItems([]);
-      return;
+      if (productIds.length === 0) {
+        setItems([]);
+        return;
+      }
+
+      const { data: products } = await supabase
+        .from("products")
+        .select("*")
+        .in("id", productIds);
+
+      setItems(products || []);
     }
 
-    const { data: products } = await supabase
-      .from("products")
-      .select("*")
-      .in("id", productIds);
-
-    setItems(products || []);
-  }
+    fetchWishlist();
+  }, [user?.email, refreshCount]);
 
   async function removeFromWishlist(id) {
     await supabase
@@ -46,7 +49,7 @@ export default function Wishlist() {
       .eq("product_id", id)
       .eq("user_email", user.email);
 
-    fetchWishlist();
+    setRefreshCount((count) => count + 1);
   }
 
   return (

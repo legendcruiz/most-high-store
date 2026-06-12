@@ -7,6 +7,17 @@ export default function Messages() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    async function fetchMessages() {
+      const { data } = await supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", {
+          ascending: false,
+        });
+
+      setMessages(data || []);
+    }
+
     fetchMessages();
 
     // realtime updates
@@ -32,17 +43,6 @@ export default function Messages() {
       supabase.removeChannel(channel);
     };
   }, []);
-
-  async function fetchMessages() {
-    const { data } = await supabase
-      .from("messages")
-      .select("*")
-      .order("created_at", {
-        ascending: false,
-      });
-
-    setMessages(data || []);
-  }
 
   return (
     <Layout>
